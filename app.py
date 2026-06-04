@@ -8,7 +8,7 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import r2_score, mean_absolute_error
 
 st.set_page_config(page_title="Car Price Prediction", layout="wide")
-st.title("🚗 Car Price Prediction Dashboard")
+st.title("Car Price Prediction Dashboard")
 
 # ── Generate Data ──────────────────────────────────────────────────────────────
 @st.cache_data
