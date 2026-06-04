@@ -6,6 +6,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import r2_score, mean_absolute_error
 
+# ── 1. Generate Data ──────────────────────────────────────────────────────────
 np.random.seed(42)
 N = 300
 
@@ -30,16 +31,19 @@ df['Price'] = df.apply(lambda r: round(
     * np.random.normal(1, 0.07)
     / 1000) * 1000, axis=1).clip(lower=50000)
 
+# ── 2. Encode & Split ─────────────────────────────────────────────────────────
 for col in ['Brand', 'Fuel']:
     df[col] = LabelEncoder().fit_transform(df[col])
 
 X, y = df.drop('Price', axis=1), df['Price']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
+# ── 3. Train Model ────────────────────────────────────────────────────────────
 model = GradientBoostingRegressor(n_estimators=150, max_depth=4, random_state=42)
 model.fit(X_train, y_train)
 y_pred = model.predict(X_test)
 
+# ── 4. Metrics ────────────────────────────────────────────────────────────────
 r2  = r2_score(y_test, y_pred)
 mae = mean_absolute_error(y_test, y_pred)
 
@@ -47,6 +51,7 @@ print(f"R² Score : {r2:.3f}")
 print(f"MAE      : ₹{mae:,.0f}")
 print(f"Records  : {N}")
 
+# ── 5. Plots ──────────────────────────────────────────────────────────────────
 fig, axes = plt.subplots(1, 3, figsize=(14, 4))
 
 # Feature Importance
