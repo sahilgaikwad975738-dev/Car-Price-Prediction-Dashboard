@@ -1,8 +1,11 @@
+import streamlit as st
 import numpy as np, pandas as pd, matplotlib.pyplot as plt
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import r2_score, mean_absolute_error
+
+st.title("Car Price Prediction Dashboard")
 
 # Data
 np.random.seed(42)
@@ -28,13 +31,23 @@ for c in ['Brand','Fuel']:
 X, y = df.drop('Price',axis=1), df['Price']
 X_tr,X_te,y_tr,y_te = train_test_split(X,y,test_size=.2,random_state=42)
 m = GradientBoostingRegressor(n_estimators=150,max_depth=4,random_state=42).fit(X_tr,y_tr)
-print(f"R²={r2_score(y_te,m.predict(X_te)):.3f}  MAE=₹{mean_absolute_error(y_te,m.predict(X_te)):,.0f}")
 
-# Plot
-fig,ax = plt.subplots(1,3,figsize=(13,4),facecolor='#f5f5f5')
+# Metrics
+r2  = r2_score(y_te, m.predict(X_te))
+mae = mean_absolute_error(y_te, m.predict(X_te))
+c1,c2,c3 = st.columns(3)
+c1.metric("R² Score", f"{r2:.3f}")
+c2.metric("MAE", f"₹{mae:,.0f}")
+c3.metric("Records", N)
+
+# Charts
+fig, ax = plt.subplots(1,3,figsize=(13,4),facecolor='#f5f5f5')
 pd.Series(m.feature_importances_,index=X.columns).sort_values().plot.barh(ax=ax[0],color='#378ADD',title='Feature Importance')
 ax[1].scatter(y_te/1000,m.predict(X_te)/1000,alpha=.4,s=14,color='#1D9E75')
 ax[1].set(title='Actual vs Predicted',xlabel='Actual ₹K',ylabel='Predicted ₹K')
-df.assign(Yr=df['Year']+2012-df['Year'].min()).groupby('Year')['Price'].mean().div(1000).plot(ax=ax[2],marker='o',ms=4,color='#BA7517',title='Avg Price by Year')
-for a in ax: a.set_facecolor('#fff'); [a.spines[s].set_visible(False) for s in ['top','right']]
-plt.tight_layout(); plt.savefig('car_price.png',dpi=120); plt.show()
+df.groupby('Year')['Price'].mean().div(1000).plot(ax=ax[2],marker='o',ms=4,color='#BA7517',title='Avg Price by Year')
+for a in ax:
+    a.set_facecolor('#fff')
+    for s in ['top','right']: a.spines[s].set_visible(False)
+plt.tight_layout()
+st.pyplot(fig)   # ← use this instead of plt.show()
