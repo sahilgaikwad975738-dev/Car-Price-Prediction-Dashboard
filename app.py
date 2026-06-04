@@ -5,7 +5,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import r2_score, mean_absolute_error
 
-st.title("🚗 Car Price Prediction")
+st.title("Car Price Prediction")
 
 np.random.seed(42)
 N = 300
